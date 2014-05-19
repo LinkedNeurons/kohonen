@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_draw.h>
 
 #define INPUTS 3
 #define EPSILON 0.1
@@ -41,7 +43,7 @@ Neuron* find_bmu(Map *m, double *inputs);
 void adjust_weights(Neuron *n, double *inputs, double epsilon, double theta);
 
 void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilon, int numEpoch);
-void train(Map *m, Training *inputs, int num_inputs, int epochs);
+void train(Map *m, Training *inputs, int num_inputs, int epochs, SDL_Surface *display);
 
 void getColor(Map *m, int x, int y, int *r, int *g, int *b);
     

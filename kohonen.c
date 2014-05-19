@@ -1,8 +1,31 @@
 #include "kohonen.h"
 #include <stdio.h>
 
+#define STEP 4
+
 double min_dbl(double a, double b) { return a < b ? a : b; }
 double max_dbl(double a, double b) { return a > b ? a : b; }
+
+
+void setPixel(SDL_Surface *display, int x, int y, int r, int g, int b) {
+    int color = r << 16 | g << 8 | b;
+    Draw_Pixel(display, x, y, color);
+}
+
+int r, g, b;
+void draw(SDL_Surface *display, Map *m) {
+
+    for (size_t i = 0; i < (size_t)m->sideX; i++)
+    for (size_t j = 0; j < (size_t)m->sideY; j++) {
+        getColor(m, i, j, &r, &g, &b);
+        for (size_t k = 0; k < STEP; k++)
+        for (size_t l = 0; l < STEP; l++)
+        setPixel(display, i * STEP  + k, j * STEP + l, r, g, b);
+    }
+    SDL_Flip(display);
+}
+
+
 
 void init_neuron(Neuron *n, int x, int y) {
     n->x = x; n->y = y;
@@ -67,7 +90,7 @@ void adjust_weights(Neuron *n, double *inputs, double epsilon, double theta) {
 }
 
 
-void train(Map *m, Training *inputs, int num_inputs, int numEpoch) {
+void train(Map *m, Training *inputs, int num_inputs, int numEpoch, SDL_Surface *display) {
     int iteration = 0;
     double epsilon = EPSILON;
     double timeCst = numEpoch / log(m->mapRadius); 
@@ -77,6 +100,10 @@ void train(Map *m, Training *inputs, int num_inputs, int numEpoch) {
         double *input = (inputs + input_chosen)->data; 
         epoch(m, input, iteration, timeCst, &epsilon, numEpoch);  
         ++iteration;
+        draw(display, m);
+        if(iteration % 100 == 0) {
+            printf("Epoch %d / %d\n", iteration, numEpoch);
+        }
     }
 }
 

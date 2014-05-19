@@ -7,9 +7,8 @@
 
 #include "kohonen.h"
 
-#define WIDTH 400
+#define WIDTH  400
 #define HEIGHT 400
-#define STEP 4
 
 void init(SDL_Surface **display) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -39,25 +38,6 @@ void catchKillEvent(int *killed) {
     }
 }
 
-void setPixel(SDL_Surface *display, int x, int y, int r, int g, int b) {
-    int color = r << 16 | g << 8 | b;
-    Draw_Pixel(display, x, y, color);
-    
-
-}
-
-void draw(SDL_Surface *display, Map *m) {
-    int r, g, b;
-
-    for (size_t i = 0; i < WIDTH / STEP; i++)
-        for (size_t j = 0; j < HEIGHT / STEP; j++) {
-            getColor(m, i, j, &r, &g, &b);
-            for (size_t k = 0; k < STEP; k++)
-                for (size_t l = 0; l < STEP; l++)
-                    setPixel(display, i * STEP  + k, j * STEP + l, r, g, b);                
-        }
-    SDL_Flip(display);
-}
 
 void make_random_training_set(Training *inputs, int num) {
     for(int i = 0; i < num; ++i) {
@@ -91,7 +71,7 @@ int main(int argc, char **argv) {
     int isTrainingSetRandom = 0;
     int netSizeX = 100, netSizeY = 100;
     int trainingSet = 8;
-    int epochs = 10000;
+    int epochs = 3000;
 
     if(argc == 1) {
         print_usage();
@@ -129,8 +109,7 @@ int main(int argc, char **argv) {
 
     Map *m = init_map(netSizeX, netSizeY);
 
-    train(m, inputs, trainingSet, epochs);
-    draw(display, m);    
+    train(m, inputs, trainingSet, epochs, display);
 
     destroy_map(m);
  
