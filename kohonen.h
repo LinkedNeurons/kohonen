@@ -11,6 +11,7 @@
 
 #define INPUTS 3
 #define EPSILON 0.1
+#define STEP 4
 
 typedef struct {
     double weights[INPUTS];

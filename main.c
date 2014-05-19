@@ -7,12 +7,10 @@
 
 #include "kohonen.h"
 
-#define WIDTH  400
-#define HEIGHT 400
 
-void init(SDL_Surface **display) {
+void init(SDL_Surface **display, int x, int y) {
     SDL_Init(SDL_INIT_VIDEO);
-    *display = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_HWSURFACE);
+    *display = SDL_SetVideoMode(x * STEP, y * STEP, 32, SDL_HWSURFACE);
     SDL_FillRect(*display, NULL, 
         SDL_MapRGB((*display)->format, 0, 0, 0));
     
@@ -90,7 +88,7 @@ int main(int argc, char **argv) {
         print_usage();
         return 0;
     }
-    init(&display);
+    init(&display, netSizeX, netSizeY);
 
     if(isTrainingSetRandom) {
         trainingSet = rand() % 100;
