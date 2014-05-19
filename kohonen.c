@@ -81,8 +81,10 @@ void train(Map *m, Training *inputs, int num_inputs) {
 }
 
 
+double max_dbl(double a, double b) { return a > b ? a : b; }
+
 void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilon) {
-    double radius = m->mapRadius * exp(-iteration / timeCst); 
+    double radius = max_dbl(m->mapRadius * exp(-iteration / timeCst), 1); 
     radius *= radius;
 
     Neuron *n = find_bmu(m, inputs);

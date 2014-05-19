@@ -66,12 +66,11 @@ int main() {
     SDL_Surface *display = NULL;
     init(&display);
     Map *m = init_map(10000, 100);
-    Training *inputs = malloc(sizeof(Training) * 6);
+    Training *inputs = malloc(sizeof(Training) * 8);
     
-    for(int i = 0; i < 6; ++i) {
+    for(int i = 0; i < 8; ++i) {
         (inputs + i)->data = malloc(3 * sizeof(double));
     }
-/*
     inputs[0].data[0] = 1; inputs[0].data[1] = 0; inputs[0].data[2] = 0;
     inputs[1].data[0] = 0; inputs[1].data[1] = 1; inputs[1].data[2] = 0;
     inputs[2].data[0] = 0; inputs[2].data[1] = 0; inputs[2].data[2] = 1;
@@ -81,23 +80,14 @@ int main() {
     inputs[5].data[0] = 0.160; inputs[5].data[1] = 0.501; inputs[5].data[2] = 0.333;
     inputs[6].data[0] = 0.827; inputs[6].data[1] = 0.329; inputs[6].data[2] = 0;
     inputs[7].data[0] = 0.556; inputs[7].data[1] = 0.266; inputs[7].data[2] = 0.678;
-*/
-    inputs[0].data[0] = 1; inputs[0].data[1] = 0; inputs[0].data[2] = 0;
-    inputs[1].data[0] = 0; inputs[1].data[1] = 1; inputs[1].data[2] = 0;
-    inputs[2].data[0] = 0; inputs[2].data[1] = 0; inputs[2].data[2] = 1;
     
-
-    inputs[3].data[0] = 0; inputs[3].data[1] = 0.5; inputs[3].data[2] = 0.25;
-    inputs[4].data[0] = 0; inputs[4].data[1] = 0;   inputs[4].data[2] = 0.5;
-    inputs[5].data[0] = 1; inputs[5].data[1] = 0;   inputs[5].data[2] = 1;
-    
-    train(m, inputs, 6);
+    train(m, inputs, 8);
 
     draw(display, m);    
 
     destroy_map(m);
  
-    for(int i = 0; i < 6; ++i) {
+    for(int i = 0; i < 8; ++i) {
         free((inputs + i)->data);
     }
     free(inputs);

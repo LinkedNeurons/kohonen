@@ -9,7 +9,7 @@
 
 #define INPUTS 3
 #define EPSILON 0.1
-#define NUM_ITERATION 1000
+#define NUM_ITERATION 10000
 
 typedef struct {
     double weights[INPUTS];
