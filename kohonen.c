@@ -12,19 +12,20 @@ void init_neuron(Neuron *n, int x, int y) {
 }
 
 
-Map* init_map(int latice_size, int xSize) {
+Map* init_map(int latice_size, int side) {
 
-    if(latice_size % xSize != 0) {
+    if(latice_size % side != 0) {
         return NULL;
     }
     
     Map *map = malloc(sizeof(Map));
     map->latice_size = latice_size;
-    map->mapRadius   = (double)xSize / 2;
+    map->mapRadius   = (double)side / 2;
+    map->side        = side; 
     map->lattice     = malloc(latice_size * sizeof(Neuron));
 
     for(int i = 0; i < latice_size; ++i) {
-        init_neuron(&(map->lattice[i]), i % xSize, i / xSize);
+        init_neuron(&(map->lattice[i]), i % side, i / side);
     }
     return map;
 }
@@ -61,12 +62,12 @@ Neuron* find_bmu(Map *m, double *inputs) {
 void adjust_weights(Neuron *n, double *inputs, double epsilon, double theta) {
     
     for(int i = 0; i < INPUTS; ++i) {
-        n->weights[i] = epsilon * theta * (inputs[i] - n->weights[i]);
+        n->weights[i] += epsilon * theta * (inputs[i] - n->weights[i]);
     }
 }
 
 
-void train(Map *m, double **inputs, int num_inputs) {
+void train(Map *m, Training *inputs, int num_inputs) {
     int iteration = 0;
     double epsilon = EPSILON;
     double timeCst = NUM_ITERATION / log(m->mapRadius); 
@@ -74,7 +75,7 @@ void train(Map *m, double **inputs, int num_inputs) {
 
     while(iteration < NUM_ITERATION) {
         int input_chosen = rand() % num_inputs;
-        double *input = *(inputs + input_chosen); 
+        double *input = (inputs + input_chosen)->data; 
         epoch(m, input, iteration, timeCst, &epsilon);  
         ++iteration;
     }
@@ -100,6 +101,15 @@ void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilo
     *epsilon = EPSILON * exp((double)-iteration / NUM_ITERATION);  
 }
 
+void getColor(Map *m, int x, int y, int *r, int *g, int *b) {
+    int pos = y * m->side + x;
+    Neuron *n = &(m->lattice[pos]);
+
+    *r = 255 * n->weights[0];
+    *g = 255 * n->weights[1];
+    *b = 255 * n->weights[2];
+
+}
 
 void destroy_map(Map *m) {
     free(m->lattice);

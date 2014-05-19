@@ -20,7 +20,12 @@ typedef struct {
     Neuron *lattice;
     int latice_size;
     double mapRadius;
+    int side; 
 } Map;
+
+typedef struct {
+    double *data;
+} Training;
 
 
 void init_neuron(Neuron *n, int x, int y);
@@ -37,7 +42,9 @@ Neuron* find_bmu(Map *m, double *inputs);
 void adjust_weights(Neuron *n, double *inputs, double epsilon, double theta);
 
 void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilon);
-void train(Map *m, double **inputs, int num_inputs);
+void train(Map *m, Training *inputs, int num_inputs);
+
+void getColor(Map *m, int x, int y, int *r, int *g, int *b);
     
 void destroy_map(Map *m);
 
