@@ -1,7 +1,7 @@
 #include "kohonen.h"
+#include <stdio.h>
 
-
-double max_dbl(double a, double b) { return a > b ? a : b; }
+double min_dbl(double a, double b) { return a < b ? a : b; }
 
 void init_neuron(Neuron *n, int x, int y) {
     n->x = x; n->y = y;
@@ -30,7 +30,7 @@ Map* init_map(int latice_size, int side) {
     return map;
 }
 
-int neuron_distance(Neuron *n, double *inputs) {
+double neuron_distance(Neuron *n, double *inputs) {
     double val = 0;
     for(int i = 0; i < INPUTS; ++i) {
         val += (inputs[i] - n->weights[i]) * (inputs[i] - n->weights[i]);
@@ -47,12 +47,12 @@ int neuron_distance_to(Neuron *src, Neuron *dst) {
 
 Neuron* find_bmu(Map *m, double *inputs) {
     Neuron *n = m->lattice;
-    double best_val = neuron_distance(n, inputs);
+    double min_val = neuron_distance(n, inputs);
 
-    for(int i = 0; i < m->latice_size; ++i) {
+    for(int i = 1; i < m->latice_size; ++i) {
         double curr = neuron_distance(&(m->lattice[i]), inputs);
-        best_val = max_dbl(curr, best_val);
-        if(best_val == curr) { n = &(m->lattice[i]); }
+        min_val = min_dbl(curr, min_val);
+        if(min_val == curr) { n = &(m->lattice[i]); }
     }
 
     return n;
@@ -72,14 +72,12 @@ void train(Map *m, Training *inputs, int num_inputs) {
     double epsilon = EPSILON;
     double timeCst = NUM_ITERATION / log(m->mapRadius); 
 
-
     while(iteration < NUM_ITERATION) {
         int input_chosen = rand() % num_inputs;
         double *input = (inputs + input_chosen)->data; 
         epoch(m, input, iteration, timeCst, &epsilon);  
         ++iteration;
     }
-
 }
 
 
@@ -90,15 +88,15 @@ void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilo
     Neuron *n = find_bmu(m, inputs);
 
     for(int i = 0; i < m->latice_size; ++i) {
-        int dst = neuron_distance_to(n, &(m->lattice[i]));
+        int dst = neuron_distance_to(&(m->lattice[i]), n);
         
         if(dst < radius) {
             double theta = exp(-dst / (2 * radius));
             adjust_weights(&(m->lattice[i]), inputs, *epsilon, theta);
 
         }
+        *epsilon = EPSILON * exp((double)-iteration / (NUM_ITERATION - iteration));  
     }
-    *epsilon = EPSILON * exp((double)-iteration / NUM_ITERATION);  
 }
 
 void getColor(Map *m, int x, int y, int *r, int *g, int *b) {

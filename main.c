@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_draw.h>
 
@@ -60,32 +61,43 @@ void draw(SDL_Surface *display, Map *m) {
 
 int main() {
 
+    srand(time(NULL));
+
     SDL_Surface *display = NULL;
     init(&display);
     Map *m = init_map(10000, 100);
-    Training *inputs = malloc(sizeof(Training) * 8);
+    Training *inputs = malloc(sizeof(Training) * 6);
     
-    for(int i = 0; i < 8; ++i) {
+    for(int i = 0; i < 6; ++i) {
         (inputs + i)->data = malloc(3 * sizeof(double));
     }
+/*
+    inputs[0].data[0] = 1; inputs[0].data[1] = 0; inputs[0].data[2] = 0;
+    inputs[1].data[0] = 0; inputs[1].data[1] = 1; inputs[1].data[2] = 0;
+    inputs[2].data[0] = 0; inputs[2].data[1] = 0; inputs[2].data[2] = 1;
 
-    inputs[0].data[0] = 0; inputs[0].data[1] = 0;   inputs[0].data[2] = 255;
-    inputs[1].data[0] = 0; inputs[1].data[1] = 255; inputs[1].data[2] = 0;
-    inputs[2].data[0] = 0; inputs[2].data[1] = 0;   inputs[2].data[2] = 255;
+    inputs[3].data[0] = 0.172; inputs[3].data[1] = 0.243; inputs[3].data[2] = 0.313;
+    inputs[4].data[0] = 0.752; inputs[4].data[1] = 0.223; inputs[4].data[2] = 0.168;
+    inputs[5].data[0] = 0.160; inputs[5].data[1] = 0.501; inputs[5].data[2] = 0.333;
+    inputs[6].data[0] = 0.827; inputs[6].data[1] = 0.329; inputs[6].data[2] = 0;
+    inputs[7].data[0] = 0.556; inputs[7].data[1] = 0.266; inputs[7].data[2] = 0.678;
+*/
+    inputs[0].data[0] = 1; inputs[0].data[1] = 0; inputs[0].data[2] = 0;
+    inputs[1].data[0] = 0; inputs[1].data[1] = 1; inputs[1].data[2] = 0;
+    inputs[2].data[0] = 0; inputs[2].data[1] = 0; inputs[2].data[2] = 1;
+    
 
-    inputs[3].data[0] = 44;  inputs[3].data[1] = 62;  inputs[3].data[2] = 80;
-    inputs[4].data[0] = 192; inputs[4].data[1] = 57;  inputs[4].data[2] = 43;
-    inputs[5].data[0] = 41;  inputs[5].data[1] = 128; inputs[5].data[2] = 85;
-    inputs[6].data[0] = 211; inputs[6].data[1] = 84;  inputs[6].data[2] = 0;
-    inputs[7].data[0] = 142; inputs[7].data[1] = 68;  inputs[7].data[2] = 173;
-
-    train(m, inputs, 8);
+    inputs[3].data[0] = 0; inputs[3].data[1] = 0.5; inputs[3].data[2] = 0.25;
+    inputs[4].data[0] = 0; inputs[4].data[1] = 0;   inputs[4].data[2] = 0.5;
+    inputs[5].data[0] = 1; inputs[5].data[1] = 0;   inputs[5].data[2] = 1;
+    
+    train(m, inputs, 6);
 
     draw(display, m);    
 
     destroy_map(m);
  
-    for(int i = 0; i < 8; ++i) {
+    for(int i = 0; i < 6; ++i) {
         free((inputs + i)->data);
     }
     free(inputs);

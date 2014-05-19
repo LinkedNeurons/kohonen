@@ -8,7 +8,7 @@
 #include <math.h>
 
 #define INPUTS 3
-#define EPSILON 1
+#define EPSILON 0.1
 #define NUM_ITERATION 1000
 
 typedef struct {
@@ -32,7 +32,7 @@ void init_neuron(Neuron *n, int x, int y);
 Map* init_map(int latice_size, int xSize);
 
 int neuron_distance_to(Neuron *src, Neuron *dst);
-int neuron_distance(Neuron *n, double *inputs);
+double neuron_distance(Neuron *n, double *inputs);
 
 //@name : BMU stands for best matching unit
 Neuron* find_bmu(Map *m, double *inputs);
