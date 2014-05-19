@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 double min_dbl(double a, double b) { return a < b ? a : b; }
+double max_dbl(double a, double b) { return a > b ? a : b; }
 
 void init_neuron(Neuron *n, int x, int y) {
     n->x = x; n->y = y;
@@ -12,20 +13,19 @@ void init_neuron(Neuron *n, int x, int y) {
 }
 
 
-Map* init_map(int latice_size, int side) {
+Map* init_map(int sideX, int sideY) {
 
-    if(latice_size % side != 0) {
-        return NULL;
-    }
-    
     Map *map = malloc(sizeof(Map));
-    map->latice_size = latice_size;
-    map->mapRadius   = (double)side / 2;
-    map->side        = side; 
-    map->lattice     = malloc(latice_size * sizeof(Neuron));
+    map->latice_size = sideX * sideY;
+    map->mapRadius   = max_dbl(sideX, sideY) / 2;
+    map->sideX       = sideX; 
+    map->sideY       = sideY; 
+    map->lattice     = malloc(map->latice_size * sizeof(Neuron));
 
-    for(int i = 0; i < latice_size; ++i) {
-        init_neuron(&(map->lattice[i]), i % side, i / side);
+    for(int y = 0; y < sideY; ++y) {
+        for(int x = 0; x < sideX; ++x) {
+            init_neuron(map->lattice + y * sideX + x, x, y);
+        }
     }
     return map;
 }
@@ -67,23 +67,22 @@ void adjust_weights(Neuron *n, double *inputs, double epsilon, double theta) {
 }
 
 
-void train(Map *m, Training *inputs, int num_inputs) {
+void train(Map *m, Training *inputs, int num_inputs, int numEpoch) {
     int iteration = 0;
     double epsilon = EPSILON;
-    double timeCst = NUM_ITERATION / log(m->mapRadius); 
+    double timeCst = numEpoch / log(m->mapRadius); 
 
-    while(iteration < NUM_ITERATION) {
+    while(iteration < numEpoch) {
         int input_chosen = rand() % num_inputs;
         double *input = (inputs + input_chosen)->data; 
-        epoch(m, input, iteration, timeCst, &epsilon);  
+        epoch(m, input, iteration, timeCst, &epsilon, numEpoch);  
         ++iteration;
     }
 }
 
 
-double max_dbl(double a, double b) { return a > b ? a : b; }
 
-void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilon) {
+void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilon, int numEpoch) {
     double radius = max_dbl(m->mapRadius * exp(-iteration / timeCst), 1); 
     radius *= radius;
 
@@ -97,12 +96,12 @@ void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilo
             adjust_weights(&(m->lattice[i]), inputs, *epsilon, theta);
 
         }
-        *epsilon = EPSILON * exp((double)-iteration / (NUM_ITERATION - iteration));  
+        *epsilon = EPSILON * exp((double)-iteration / (numEpoch- iteration));  
     }
 }
 
 void getColor(Map *m, int x, int y, int *r, int *g, int *b) {
-    int pos = y * m->side + x;
+    int pos = y * m->sideX + x;
     Neuron *n = &(m->lattice[pos]);
 
     *r = 255 * n->weights[0];
