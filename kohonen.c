@@ -1,8 +1,6 @@
 #include "kohonen.h"
 #include <stdio.h>
 
-#define STEP 4
-
 double min_dbl(double a, double b) { return a < b ? a : b; }
 double max_dbl(double a, double b) { return a > b ? a : b; }
 
@@ -18,36 +16,39 @@ void draw(SDL_Surface *display, Map *m) {
     for (size_t i = 0; i < (size_t)m->sideX; i++)
     for (size_t j = 0; j < (size_t)m->sideY; j++) {
         getColor(m, i, j, &r, &g, &b);
-        for (size_t k = 0; k < STEP; k++)
-        for (size_t l = 0; l < STEP; l++)
-        setPixel(display, i * STEP  + k, j * STEP + l, r, g, b);
+        for (size_t k = 0; k < (size_t)m->scale; k++)
+        for (size_t l = 0; l < (size_t)m->scale; l++)
+        setPixel(display, i * m->scale  + k, j * m->scale + l, r, g, b);
     }
     SDL_Flip(display);
 }
 
 
 
-void init_neuron(Neuron *n, int x, int y) {
+void init_neuron(Neuron *n, int x, int y, int num_weights) {
     n->x = x; n->y = y;
-    for(int i = 0; i < INPUTS; ++i) {
+    n->num_weights = num_weights;
+    n->weights = malloc(num_weights * sizeof(double));
+    for(int i = 0; i < num_weights; ++i) {
         double r = (double)rand() / (double)RAND_MAX;
         n->weights[i] = r;
     }
 }
 
 
-Map* init_map(int sideX, int sideY) {
+Map* init_map(int sideX, int sideY, int num_weights, int scale) {
 
     Map *map = malloc(sizeof(Map));
     map->latice_size = sideX * sideY;
     map->mapRadius   = max_dbl(sideX, sideY) / 2;
     map->sideX       = sideX; 
     map->sideY       = sideY; 
+    map->scale       = scale;
     map->lattice     = malloc(map->latice_size * sizeof(Neuron));
 
     for(int y = 0; y < sideY; ++y) {
         for(int x = 0; x < sideX; ++x) {
-            init_neuron(map->lattice + y * sideX + x, x, y);
+            init_neuron(map->lattice + y * sideX + x, x, y, num_weights);
         }
     }
     return map;
@@ -55,7 +56,7 @@ Map* init_map(int sideX, int sideY) {
 
 double neuron_distance(Neuron *n, double *inputs) {
     double val = 0;
-    for(int i = 0; i < INPUTS; ++i) {
+    for(int i = 0; i < n->num_weights; ++i) {
         val += (inputs[i] - n->weights[i]) * (inputs[i] - n->weights[i]);
     }
     return val;
@@ -84,7 +85,7 @@ Neuron* find_bmu(Map *m, double *inputs) {
 
 void adjust_weights(Neuron *n, double *inputs, double epsilon, double theta) {
     
-    for(int i = 0; i < INPUTS; ++i) {
+    for(int i = 0; i < n->num_weights; ++i) {
         n->weights[i] += epsilon * theta * (inputs[i] - n->weights[i]);
     }
 }
@@ -138,6 +139,9 @@ void getColor(Map *m, int x, int y, int *r, int *g, int *b) {
 }
 
 void destroy_map(Map *m) {
+    for(int i = 0; i < m->latice_size; ++i) {
+        free(m->lattice[i].weights);
+    }
     free(m->lattice);
     free(m);
 }

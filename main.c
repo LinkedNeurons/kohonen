@@ -7,10 +7,11 @@
 
 #include "kohonen.h"
 
+int scale = 4;
 
 void init(SDL_Surface **display, int x, int y) {
     SDL_Init(SDL_INIT_VIDEO);
-    *display = SDL_SetVideoMode(x * STEP, y * STEP, 32, SDL_HWSURFACE);
+    *display = SDL_SetVideoMode(x * scale, y * scale, 32, SDL_HWSURFACE);
     SDL_FillRect(*display, NULL, 
         SDL_MapRGB((*display)->format, 0, 0, 0));
     
@@ -58,7 +59,7 @@ void make_default_training_set(Training *inputs) {
 }
 
 void print_usage() {
-    printf("usage 1 : kohonen isTrainingSetRandom NetSizeX NetSizeY epochs\n");
+    printf("usage 1 : kohonen isTrainingSetRandom NetSizeX NetSizeY scale epochs\n");
     printf("usage 2 : kohonen --defaultParams\n");
 }
 
@@ -70,6 +71,7 @@ int main(int argc, char **argv) {
     int netSizeX = 100, netSizeY = 100;
     int trainingSet = 8;
     int epochs = 3000;
+    int scale = 4;
 
     if(argc == 1) {
         print_usage();
@@ -79,11 +81,12 @@ int main(int argc, char **argv) {
             print_usage();
             return 0;
         }
-    } else if(argc == 5) {
+    } else if(argc == 6) {
         isTrainingSetRandom = atoi(argv[1]);
         netSizeX = atoi(argv[2]);
         netSizeY = atoi(argv[3]);
-        epochs   = atoi(argv[4]);
+        scale    = atoi(argv[4]);
+        epochs   = atoi(argv[5]);
     } else { 
         print_usage();
         return 0;
@@ -105,7 +108,7 @@ int main(int argc, char **argv) {
         make_default_training_set(inputs);
     }
 
-    Map *m = init_map(netSizeX, netSizeY);
+    Map *m = init_map(netSizeX, netSizeY, 3, scale);
 
     train(m, inputs, trainingSet, epochs, display);
 

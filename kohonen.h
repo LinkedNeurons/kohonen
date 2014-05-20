@@ -9,13 +9,12 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_draw.h>
 
-#define INPUTS 3
 #define EPSILON 0.1
-#define STEP 4
 
 typedef struct {
-    double weights[INPUTS];
+    double *weights;
     int x, y;
+    int num_weights;
 } Neuron;
 
 typedef struct {
@@ -23,6 +22,7 @@ typedef struct {
     int latice_size;
     double mapRadius;
     int sideX, sideY; 
+    int scale;
 } Map;
 
 typedef struct {
@@ -30,8 +30,8 @@ typedef struct {
 } Training;
 
 
-void init_neuron(Neuron *n, int x, int y);
-Map* init_map(int xSize, int ySize);
+void init_neuron(Neuron *n, int x, int y, int num_weights);
+Map* init_map(int xSize, int ySize, int num_Weights, int scale);
 
 int neuron_distance_to(Neuron *src, Neuron *dst);
 double neuron_distance(Neuron *n, double *inputs);
