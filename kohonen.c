@@ -151,15 +151,12 @@ int get_node_quality(Map *m, int x, int y, Neuron *n) {
 void make_quality_map(Map *m, SDL_Surface *display) {
     for(int y = 0; y < m->sideY; ++y)
     for(int x = 0; x < m->sideX; ++x) { 
-        double quality = get_node_quality(m, x, y, &(m->lattice[y * m->sideX +x]));
+        int quality = get_node_quality(m, x, y, m->lattice + y * m->sideX +x);
+		int grayscale = 255 / (1 + quality);
         for (size_t k = 0; k < (size_t)m->scale; k++)
         for (size_t l = 0; l < (size_t)m->scale; l++)
-            setPixel(display, y * m->scale  + k, x * m->scale + l, quality, quality, quality);
-
-
-
+            setPixel(display, x * m->scale  + k, y * m->scale + l, grayscale, grayscale, grayscale);
     }
-
 }
 
 void getColor(Map *m, int x, int y, int *r, int *g, int *b) {
