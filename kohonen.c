@@ -109,6 +109,13 @@ void train(Map *m, Training *inputs, int num_inputs, int numEpoch, SDL_Surface *
 }
 
 
+double distance_between_weights(Neuron *src, Neuron *dst) {
+    double dist = 0;
+    for(int i = 0; i < src->num_weights; ++i) {
+        dist += dst->weights[i] - src->weights[i];
+    }
+    return dist < 0 ? -dist : dist;
+}
 
 void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilon, int numEpoch) {
     double radius = max_dbl(m->mapRadius * exp(-iteration / timeCst), 1); 
