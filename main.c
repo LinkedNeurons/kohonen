@@ -9,8 +9,11 @@
 
 int scale = 4;
 
-void init(SDL_Surface **display, int x, int y) {
+void init_sdl() {
     SDL_Init(SDL_INIT_VIDEO);
+}
+
+void init_surface(SDL_Surface **display, int x, int y) {
     *display = SDL_SetVideoMode(x * scale, y * scale, 32, SDL_HWSURFACE);
     SDL_FillRect(*display, NULL, 
         SDL_MapRGB((*display)->format, 0, 0, 0));
@@ -91,7 +94,8 @@ int main(int argc, char **argv) {
         print_usage();
         return 0;
     }
-    init(&display, netSizeX, netSizeY);
+
+    init_surface(&display, netSizeX, netSizeY);
 
     if(isTrainingSetRandom) {
         trainingSet = rand() % 100;
@@ -111,6 +115,9 @@ int main(int argc, char **argv) {
     Map *m = init_map(netSizeX, netSizeY, 3, scale);
 
     train(m, inputs, trainingSet, epochs, display);
+
+    make_quality_map(m, display);
+
 
     destroy_map(m);
  

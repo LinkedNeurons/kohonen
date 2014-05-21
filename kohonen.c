@@ -128,6 +128,40 @@ void epoch(Map *m, double *inputs, int iteration, double timeCst, double *epsilo
     }
 }
 
+int get_node_quality(Map *m, int x, int y, Neuron *n) {
+    double quality = 0.;
+
+    if(x != 0) { // left Neuron (if exists)  
+        quality += neuron_distance_to(n, &(m->lattice[y * m->sideX + x - 1])); 
+    }
+    if(x != m->sideX - 1) { //right Neuron
+        quality += neuron_distance_to(n, &(m->lattice[y * m->sideX + x + 1])); 
+
+    }
+    if(y != 0) { // top neuron  
+        quality += neuron_distance_to(n, &(m->lattice[(y - 1) * m->sideX + x])); 
+    }
+    if(y != m->sideY - 1) { // bottom Neuron
+        quality += neuron_distance_to(n, &(m->lattice[(y + 1) * m->sideX + x])); 
+    }
+
+    return quality;
+}
+
+void make_quality_map(Map *m, SDL_Surface *display) {
+    for(int y = 0; y < m->sideY; ++y)
+    for(int x = 0; x < m->sideX; ++x) { 
+        double quality = get_node_quality(m, x, y, &(m->lattice[y * m->sideX +x]));
+        for (size_t k = 0; k < (size_t)m->scale; k++)
+        for (size_t l = 0; l < (size_t)m->scale; l++)
+            setPixel(display, y * m->scale  + k, x * m->scale + l, quality, quality, quality);
+
+
+
+    }
+
+}
+
 void getColor(Map *m, int x, int y, int *r, int *g, int *b) {
     int pos = y * m->sideX + x;
     Neuron *n = &(m->lattice[pos]);
